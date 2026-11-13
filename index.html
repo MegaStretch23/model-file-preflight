@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Model File Preflight: check a downloaded AI model file before you load it (safetensors, GGUF, pickle, ONNX; in your browser)</title>
+<meta name="description" content="Drop a downloaded model file. The page reads only its header and structure in your browser and reports PASS, WARN or FAIL with itemized findings: broken safetensors offsets, truncated GGUF, pickle opcodes that import os or eval, ONNX external data. Nothing is uploaded.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+<h1>Model File Preflight</h1>
+<p class="lead">Check a downloaded AI model file before you load it. Drop a <b>.safetensors</b>, <b>.gguf</b>, <b>.pt / .pth / .bin / .pkl</b> (pickle or zip-based torch) or <b>.onnx</b> file. The page reads only the header and structure, never loads or runs the model, and lists what looks wrong: tensor offsets that overlap or run past the end, a truncated GGUF, pickle opcodes that import <code>os</code>, <code>subprocess</code> or <code>builtins.eval</code>, ONNX tensors that read from external files.</p>
+<p class="priv"><b>Private by construction.</b> Everything runs in this page. The file is read in your browser tab, nothing is uploaded and the page code makes no network calls. This is a heuristic pre-flight, <b>not a guarantee of safety</b>, and it is not malware detection: a PASS means none of these checks found a problem.</p>
+</header>
+<main>
+<section class="box" aria-labelledby="h-scan">
+<h2 id="h-scan">1. Choose a file</h2>
+<div id="drop" role="button" tabindex="0">Drop a model file here, or use the button below. The file stays on your computer.</div>
+<div class="row"><label>Model file <input id="file" type="file"></label>
+<label class="grow">Expected SHA-256 (optional, from the model page) <input id="expected" type="text" size="64" placeholder="64 hex characters, or sha256:..." spellcheck="false"></label>
+<label><input id="dohash" type="checkbox" checked> Compute SHA-256 (reads the whole file)</label></div>
+<div class="row"><button id="scan" type="button">Scan</button><progress id="prog" max="1" value="0" hidden></progress></div>
+<p id="status" class="msg" role="status"></p>
+</section>
+<section class="box" id="report" hidden aria-labelledby="h-rep">
+<h2 id="h-rep">2. Report</h2>
+<div id="verdict" class="verdict" role="status"></div>
+<p id="fileinfo" class="hint"></p>
+<p id="hashline" class="mono"></p>
+<div id="findings"></div>
+<div class="row"><button id="dljson" type="button">Download report (JSON)</button><button id="cpjson" type="button">Copy report (JSON)</button></div>
+<p class="hint" id="limits"></p>
+</section>
+<section class="box" aria-labelledby="h-how">
+<h2 id="h-how">What each format is checked for</h2>
+<ul>
+<li><b>safetensors</b>: header length plausible and inside the file; header is JSON; each tensor has a known dtype and its byte span equals shape times dtype size; spans do not overlap, run past the end or leave gaps.</li>
+<li><b>GGUF</b>: magic, version, tensor and key/value counts against the file size; the metadata and tensor table parse; each tensor of a known type fits inside the file (truncation).</li>
+<li><b>Pickle and zip-based torch</b>: the opcode stream is read, never executed. <code>GLOBAL</code>, <code>STACK_GLOBAL</code>, <code>INST</code> and the <code>REDUCE</code> / <code>NEWOBJ</code> / <code>BUILD</code> calls on them are traced. Imports of <code>os</code>, <code>posix</code>, <code>subprocess</code>, <code>socket</code>, <code>builtins.eval / exec</code> and similar are a FAIL; modules outside the usual checkpoint classes are a WARN.</li>
+<li><b>ONNX</b>: the file parses as protobuf, has an ir_version and a graph; tensors that point to external data files are a WARN, and a location that leaves the model folder is a FAIL.</li>
+<li><b>Any file</b>: SHA-256 and, if you paste one, a comparison with the expected hash.</li>
+</ul>
+<p class="hint">Not covered: tensor values, backdoored weights, malware inside the file, pickle tricks that need execution to reveal, and anything past the first 64 MiB of a pickle. The same checks ship as a one-file stdlib Python CLI, <a href="preflight.py">preflight.py</a>, for running on a download before you load it: <code>python3 -I preflight.py model.pt</code>.</p>
+</section>
+</main>
+<footer><p>Free, MIT licensed. Source: this Space's files. No account, no tracking.</p></footer>
+<script src="core.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
