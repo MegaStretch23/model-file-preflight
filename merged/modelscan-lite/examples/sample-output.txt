@@ -1,0 +1,19 @@
+modelscan-lite 0.1.0
+demo-fixtures/good.safetensors  [safetensors]  200 bytes
+  sha256 c2a89ecdedaaf4f30e1df1c4008534c89e9cbdf56bdc09ea9205a01a9ac28d70
+  no checks fired
+  verdict OK
+demo-fixtures/evil-os-system.pkl  [pickle]  57 bytes
+  sha256 f04d3dbaaaa08cccfbf5ccc8086b4bc81dab2c1921aa9bb4a9aa9e3f7185a762
+  DANGEROUS  pickle-dangerous-global: GLOBAL at offset 0 references os.system; unpickling can run code
+  verdict DANGEROUS
+demo-fixtures/overlap.safetensors  [safetensors]  200 bytes
+  sha256 3d79d914ff6f26d0438736df27adc82e797538bde456bae7f33c59285ad56ae5
+  SUSPICIOUS st-overlap: tensor 'b' starts at 8, before the previous tensor ends at 16: overlapping data
+  SUSPICIOUS st-trailing-bytes: 8 bytes after the last tensor are not covered by any tensor
+  verdict SUSPICIOUS
+demo-fixtures/lambda.keras  [zip]  452 bytes
+  sha256 6e4e429910e641a97a681a87eafe1f7a7ac1c754bd1d76ab70109f90482ff1ea
+  SUSPICIOUS keras-lambda: Keras Lambda layer 'lambda_1' in config.json: Lambda layers carry serialized Python code
+  verdict SUSPICIOUS
+overall DANGEROUS

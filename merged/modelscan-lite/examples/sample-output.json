@@ -1,0 +1,32 @@
+{
+  "tool": "modelscan-lite",
+  "version": "0.1.0",
+  "verdict": "DANGEROUS",
+  "files": [
+    {
+      "path": "demo-fixtures/evil-os-system.pkl",
+      "size": 57,
+      "sha256": "f04d3dbaaaa08cccfbf5ccc8086b4bc81dab2c1921aa9bb4a9aa9e3f7185a762",
+      "format": "pickle",
+      "verdict": "DANGEROUS",
+      "findings": [
+        {
+          "severity": "dangerous",
+          "code": "pickle-dangerous-global",
+          "message": "GLOBAL at offset 0 references os.system; unpickling can run code",
+          "offset": 0,
+          "ref": "os.system"
+        }
+      ],
+      "stats": {
+        "pickles": 1,
+        "opcodes": 6,
+        "globals": [
+          "os.system"
+        ],
+        "calls": 1
+      }
+    }
+  ],
+  "skipped": []
+}

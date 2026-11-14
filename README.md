@@ -61,3 +61,7 @@ Heuristic pre-flight, not a guarantee of safety. Looks at headers and structure 
 
 - [pdfguard](https://gumroad.com/l/gvvcsh): a separate paid Python tool (US$19) that looks for hidden text in PDFs before an LLM reads them. Same idea (look before you load), different file type.
 - [modelscan-lite](https://github.com/MegaStretch23/modelscan-lite): a separate open-source Python CLI with a different check list (folders, Keras `Lambda` layers, duplicate JSON keys). Different tool, same author.
+
+## Merged from modelscan-lite
+
+`modelscan-lite` was the same idea built twice. Its own files are kept in [`merged/modelscan-lite/`](merged/modelscan-lite/) (unique parts: see that folder's README and tests); the old repo now points here: https://github.com/MegaStretch23/modelscan-lite

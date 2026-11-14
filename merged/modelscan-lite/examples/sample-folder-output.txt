@@ -1,0 +1,85 @@
+modelscan-lite 0.1.0
+demo-fixtures/bad-count.gguf  [gguf]  88 bytes
+  sha256 afeabda4e1c1f9ae6d6fb81382590c00b7a4d7ca20c3ed0f086de7dbb5dc74de
+  SUSPICIOUS gguf-tensor-count: tensor count 1099511627776 cannot fit in a 88-byte file
+  verdict SUSPICIOUS
+demo-fixtures/bad-header-length.safetensors  [safetensors]  24 bytes
+  sha256 3785ed0688348ad9a50bc4ff0b1f494dc9d0c7ece84727416b1b23af71d6b92c
+  SUSPICIOUS st-header-past-eof: header length 1000 is larger than the 16 bytes after the length field
+  verdict SUSPICIOUS
+demo-fixtures/bad-version.gguf  [gguf]  88 bytes
+  sha256 6e943c47c9792cfa85f0c4db8715da34ad6e31ad92be1364c051bf03402540c9
+  SUSPICIOUS gguf-bad-version: version 99 is not 1, 2 or 3
+  verdict SUSPICIOUS
+demo-fixtures/eval-builtin.pkl  [pickle]  40 bytes
+  sha256 7d7131ab39153a52cf0e8180f4ecddc5d941ec667cb866cf5dc27aa5a182c92c
+  DANGEROUS  pickle-dangerous-global: GLOBAL at offset 2 references builtins.eval; unpickling can run code
+  verdict DANGEROUS
+demo-fixtures/evil-os-system.pkl  [pickle]  57 bytes
+  sha256 f04d3dbaaaa08cccfbf5ccc8086b4bc81dab2c1921aa9bb4a9aa9e3f7185a762
+  DANGEROUS  pickle-dangerous-global: GLOBAL at offset 0 references os.system; unpickling can run code
+  verdict DANGEROUS
+demo-fixtures/evil-subprocess-p4.pkl  [pickle]  33 bytes
+  sha256 5e881b4819d24f69a0ade15f50a4769333d873896a70377e30c87e6d1f1c3347
+  DANGEROUS  pickle-dangerous-global: STACK_GLOBAL at offset 23 references subprocess.Popen; unpickling can run code
+  verdict DANGEROUS
+demo-fixtures/evil.pt  [zip]  307 bytes
+  sha256 fbbae6bf30bdad21963d0fa9ec4db3bde82bed18b3d4662ef01511198f51af31
+  DANGEROUS  pickle-dangerous-global: archive/data.pkl: GLOBAL at offset 0 references os.system; unpickling can run code
+  verdict DANGEROUS
+demo-fixtures/good.gguf  [gguf]  88 bytes
+  sha256 7b53e4fafff14889e34202ccdbab0b80d2ac27f9974d86692cf7cbed5541fde1
+  no checks fired
+  verdict OK
+demo-fixtures/good.pt  [zip]  446 bytes
+  sha256 8e3ae45081536b1d4d04594d9db296916b60cacb6ae83d325d6a2ddca5c42bb5
+  no checks fired
+  verdict OK
+demo-fixtures/good.safetensors  [safetensors]  200 bytes
+  sha256 c2a89ecdedaaf4f30e1df1c4008534c89e9cbdf56bdc09ea9205a01a9ac28d70
+  no checks fired
+  verdict OK
+demo-fixtures/lambda.h5  [hdf5]  308 bytes
+  sha256 647d6d1209470b56ab5d533e38e546b4c616663439ebc5402600f76746c759e5
+  SUSPICIOUS keras-lambda: Keras Lambda layer 'lambda_1' near offset 183: Lambda layers carry serialized Python code that runs when the model is loaded without safe mode
+  verdict SUSPICIOUS
+demo-fixtures/lambda.keras  [zip]  452 bytes
+  sha256 6e4e429910e641a97a681a87eafe1f7a7ac1c754bd1d76ab70109f90482ff1ea
+  SUSPICIOUS keras-lambda: Keras Lambda layer 'lambda_1' in config.json: Lambda layers carry serialized Python code
+  verdict SUSPICIOUS
+demo-fixtures/out-of-range.safetensors  [safetensors]  200 bytes
+  sha256 b745b0093c1842671eb7059ae0c393b09943e9d81322c95292432dded968e22e
+  SUSPICIOUS st-offset-out-of-range: tensor 'b': data_offsets [16, 4000] outside the 24-byte data region
+  SUSPICIOUS st-trailing-bytes: 8 bytes after the last tensor are not covered by any tensor
+  verdict SUSPICIOUS
+demo-fixtures/overlap.safetensors  [safetensors]  200 bytes
+  sha256 3d79d914ff6f26d0438736df27adc82e797538bde456bae7f33c59285ad56ae5
+  SUSPICIOUS st-overlap: tensor 'b' starts at 8, before the previous tensor ends at 16: overlapping data
+  SUSPICIOUS st-trailing-bytes: 8 bytes after the last tensor are not covered by any tensor
+  verdict SUSPICIOUS
+demo-fixtures/pickle-pretending.safetensors  [pickle]  33 bytes
+  sha256 5e881b4819d24f69a0ade15f50a4769333d873896a70377e30c87e6d1f1c3347
+  SUSPICIOUS extension-mismatch: extension .safetensors but the content looks like pickle
+  DANGEROUS  pickle-dangerous-global: STACK_GLOBAL at offset 23 references subprocess.Popen; unpickling can run code
+  verdict DANGEROUS
+demo-fixtures/plain.h5  [hdf5]  215 bytes
+  sha256 dc551b567c4f7fd97f8e732f0509f94c50abb6a9eaedf7cf4dfe4855a5e317d5
+  no checks fired
+  verdict OK
+demo-fixtures/plain.keras  [zip]  359 bytes
+  sha256 e32f502ed8dbfc47bf30aee9f8d4d6e27697c5e3a4d6df55c312c6a0cf3a13d7
+  no checks fired
+  verdict OK
+demo-fixtures/tensorish.pkl  [pickle]  88 bytes
+  sha256 6270b862169a69a5a0d9d49481f57276059de52a9170c2fd567bc348a8f2d26a
+  no checks fired
+  verdict OK
+demo-fixtures/traversal.pt  [zip]  331 bytes
+  sha256 41bd76ad7b84746ade25a24c5206554a1f53bd99000cf07128d2f91e3e514cfe
+  DANGEROUS  zip-path-traversal: member '../../etc/cron.d/x': '..' path component; extracting it can write outside the target folder
+  verdict DANGEROUS
+demo-fixtures/unknown-global.pkl  [pickle]  26 bytes
+  sha256 a6396aeb913af42a7188f97d55e2ff25e3593cf381ba588bec8f789a89df49d3
+  SUSPICIOUS pickle-unknown-global: GLOBAL at offset 2 references mypkg.hooks.run, outside the common tensor/collections allowlist; review it
+  verdict SUSPICIOUS
+overall DANGEROUS
